@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<body>
+{% if user.is_authenticated %}
+
+<header>
+    <nav class="container container--70">
+        <ul class="nav--actions">
+            <li class="logged-user">
+                Witaj {{user.first_name}}
+                <ul class="dropdown">
+                    <li><a href="{% url 'user_profile' %}">Profil</a></li>
+                    <li><a href="{% url 'user_update' %}">Ustawienia</a></li>
+                    {% if user.is_superuser %}
+                    <li><a href="{% url 'admin:index' %}">Panel administracyjny</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        {% else %}
+
+<header>
+            <nav class="container container--70">
+                <ul class="nav--actions">
+                    <li><a href="{% url 'login' %}">Zaloguj</a></li>
+                    <li class="highlighted"><a href="{% url 'register' %}">Załóż konto</a></li>
+                </ul>
+                {% endif %}
+
+        <ul>
+          <li><a href="{% url 'landing_page' %}" class="btn btn--without-border active">Start</a></li>
+          <li><a href="{% url 'landing_page' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
+          <li><a href="{% url 'landing_page' %}#about-us" class="btn btn--without-border">O nas</a></li>
+          <li><a href="{% url 'landing_page' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+          <li><a href="{% url 'add_donation' %}" class="btn btn--without-border">Przekaż dary</a></li>
+          <li><a href="#contact" class="btn btn--without-border">Kontakt</a></li>
+        </ul>
+            </nav>
+</header>
+
+            <section class="user-profile">
+            <div class="user-profile--text">
+                  <h2>Twoje dane</h2>
+            <table>
+                <tr>
+                    <td>Imię: </td>
+                    <td>{{user.first_name}}</td>
+                </tr>
+                <tr>
+                    <td>Nazwisko: </td>
+                    <td>{{user.last_name}}</td>
+                </tr>
+                <tr>
+                    <td>Email: </td>
+                    <td>{{user.email}}</td>
+                </tr>
+            </table>
+            </div>
+            </section>
+
+        <section class="user-profile">
+            <div class="user-profile--text">
+            <h2>Twoje dary</h2>
+
+            <table id="donations_table">
+                <tr>
+                    <th>Instytucja</th>
+                    <th>Ilość worków</th>
+                    <th>Kategorie darów</th>
+                    <th>Kiedy zabrane?</th>
+                    <th>Status</th>
+                </tr>
+                    {% for donation in donations %}
+                <tr>
+                    <td>{{donation.institution.name}}</td>
+                    <td>{{donation.quantity}}</td>
+                    <td>
+                        {% for category in donation.categories.all %}
+                        {{ category.name }}
+                        {% endfor %}
+                    </td>
+                    <td>{{donation.pick_up_date}}, {{donation.pick_up_time}}</td>
+                    <td>
+                       {% if donation.is_taken == True %}
+                            Worki zabrane
+                            {% else %}
+                            <button class="archive-donation">
+                                Oznacz jako zabrane
+                            </button>
+                            {% endif %}
+                    </td>
+                </tr>
+                    {% endfor %}
+            </table>
+            </div>
+        </section>
+
+
+{% endblock %}
